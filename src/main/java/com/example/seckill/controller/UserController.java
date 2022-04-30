@@ -6,12 +6,13 @@ import com.example.seckill.error.EmBusinessError;
 import com.example.seckill.response.CommonReturnType;
 import com.example.seckill.service.UserService;
 import com.example.seckill.service.model.UserModel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author cheng
@@ -19,10 +20,35 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping("/user")
+@Slf4j
+@CrossOrigin(originPatterns = {"*"}, allowCredentials = "true")
 public class UserController extends BaseController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private HttpServletRequest httpServletRequest;
+
+    @RequestMapping(value = "/getotp", method = {RequestMethod.POST},
+            consumes = {CONTENT_TYPE_FORMED})
+    @ResponseBody
+    public CommonReturnType getOtp(@RequestParam(name = "telephone") String telephone) {
+        // 需要按照一定的规则生成OTP验证码
+        // 想生成一个5位数的验证码，[10000 - 99999]
+        int randomNumber = 10000 + (int) (Math.random() * 90000);
+        String otpCode = String.valueOf(randomNumber);
+
+        // 将OTP验证码同用户的手机号相关联
+        // 未采用分布式，后期会改成分布式，并使用Redis存放验证码
+        // httpServletRequest 里有threadlocal保证多线程并发的安全性
+        httpServletRequest.getSession().setAttribute(telephone, otpCode);
+
+        // 将OTP验证码通过短信发送给用户，省略
+        log.info("telephone = " + telephone + " & otpCode = " + otpCode);
+        return CommonReturnType.create(null);
+    }
+
 
     /**
      * 调用service服务获取对应id的用户，返回给前端
