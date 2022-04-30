@@ -25,17 +25,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserModel getUserById(Integer id) {
         UserDO userDO = userDOMapper.selectByPrimaryKey(id);
+        if (userDO == null) return null;
         UserPasswordDO userPasswordDO = userPasswordDOMapper.selectByUserId(userDO.getId());
         UserModel userModel = convertFromDataObject(userDO, userPasswordDO);
         return userModel;
     }
 
     private UserModel convertFromDataObject(UserDO userDO, UserPasswordDO userPasswordDO) {
-        if (userDO == null) return null;
         UserModel userModel = new UserModel();
         BeanUtils.copyProperties(userDO, userModel);
         if (userPasswordDO != null) userModel.setEncryptPassword(userPasswordDO.getEncryptPassword());
-
         return userModel;
     }
 }
