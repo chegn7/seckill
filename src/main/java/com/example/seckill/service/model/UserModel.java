@@ -1,8 +1,6 @@
 package com.example.seckill.service.model;
 
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * @author cheng

@@ -4,11 +4,16 @@ import com.example.seckill.dao.UserDOMapper;
 import com.example.seckill.dao.UserPasswordDOMapper;
 import com.example.seckill.dataobject.UserDO;
 import com.example.seckill.dataobject.UserPasswordDO;
+import com.example.seckill.error.BusinessException;
+import com.example.seckill.error.EmBusinessError;
 import com.example.seckill.service.UserService;
 import com.example.seckill.service.model.UserModel;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author cheng
@@ -36,5 +41,46 @@ public class UserServiceImpl implements UserService {
         BeanUtils.copyProperties(userDO, userModel);
         if (userPasswordDO != null) userModel.setEncryptPassword(userPasswordDO.getEncryptPassword());
         return userModel;
+    }
+
+    @Override
+    @Transactional
+    public void register(UserModel userModel) throws BusinessException {
+        if (userModel == null) throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
+        // 校验用户信息的必填项
+        if (StringUtils.isEmpty(userModel.getName())
+                || userModel.getGender() == null
+                || userModel.getAge() == null
+                || StringUtils.isEmpty(userModel.getTelephone())
+//                || StringUtils.isEmpty(userModel.getRegisterMode())
+//                || StringUtils.isEmpty(userModel.getThirdPartyId())
+        ) throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
+        UserDO userDO = convertFromModel(userModel);
+        try {
+            userDOMapper.insertSelective(userDO);
+        } catch (DuplicateKeyException e) {
+            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "手机号已注册，请登录");
+        }
+
+        userModel.setId(userDO.getId());
+
+        UserPasswordDO userPasswordDO = convertFromModelToPassword(userModel);
+        userPasswordDOMapper.insertSelective(userPasswordDO);
+        return;
+    }
+
+    private UserPasswordDO convertFromModelToPassword(UserModel userModel) {
+        if (userModel == null) return null;
+        UserPasswordDO userPasswordDO = new UserPasswordDO();
+        userPasswordDO.setUserId(userModel.getId());
+        userPasswordDO.setEncryptPassword(userModel.getEncryptPassword());
+        return userPasswordDO;
+    }
+
+    private UserDO convertFromModel(UserModel userModel) {
+        if (userModel == null) return null;
+        UserDO userDO = new UserDO();
+        BeanUtils.copyProperties(userModel,userDO);
+        return userDO;
     }
 }
