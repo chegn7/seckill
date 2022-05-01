@@ -8,6 +8,8 @@ import com.example.seckill.error.BusinessException;
 import com.example.seckill.error.EmBusinessError;
 import com.example.seckill.service.UserService;
 import com.example.seckill.service.model.UserModel;
+import com.example.seckill.validator.ValidationResult;
+import com.example.seckill.validator.ValidatorImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserPasswordDOMapper userPasswordDOMapper;
 
+    @Autowired
+    private ValidatorImpl validator;
+
     @Override
     public UserModel getUserById(Integer id) {
         UserDO userDO = userDOMapper.selectByPrimaryKey(id);
@@ -43,13 +48,19 @@ public class UserServiceImpl implements UserService {
     public void register(UserModel userModel) throws BusinessException {
         if (userModel == null) throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
         // 校验用户信息的必填项
-        if (StringUtils.isEmpty(userModel.getName())
-                || userModel.getGender() == null
-                || userModel.getAge() == null
-                || StringUtils.isEmpty(userModel.getTelephone())
-//                || StringUtils.isEmpty(userModel.getRegisterMode())
-//                || StringUtils.isEmpty(userModel.getThirdPartyId())
-        ) throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
+//        if (StringUtils.isEmpty(userModel.getName())
+//                || userModel.getGender() == null
+//                || userModel.getAge() == null
+//                || StringUtils.isEmpty(userModel.getTelephone())
+////                || StringUtils.isEmpty(userModel.getRegisterMode())
+////                || StringUtils.isEmpty(userModel.getThirdPartyId())
+//        ) throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
+//
+        ValidationResult validationResult = validator.validate(userModel);
+        if(validationResult.isHasErrors()) {
+            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, validationResult.getErrorMessage());
+        }
+
         UserDO userDO = convertFromModel(userModel);
         try {
             userDOMapper.insertSelective(userDO);
