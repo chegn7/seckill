@@ -9,7 +9,8 @@ public enum EmBusinessError implements CommonError {
 
     UNKNOWN_ERROR(10002, "未知错误"),
     // 2xxxx 为用户信息相关错误定义
-    USER_NOT_EXIST(20001, "用户不存在");
+    USER_NOT_EXIST(20001, "用户不存在"),
+    USER_LOGIN_FAILED(20002, "用户名或密码错误");
 
     private int errorCode;
     private String errorMessage;

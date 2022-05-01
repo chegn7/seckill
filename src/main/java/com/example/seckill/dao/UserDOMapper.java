@@ -2,10 +2,10 @@ package com.example.seckill.dao;
 
 import com.example.seckill.dataobject.UserDO;
 import com.example.seckill.dataobject.UserDOExample;
-import java.util.List;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 @Mapper
 public interface UserDOMapper {
     /**
@@ -95,4 +95,6 @@ public interface UserDOMapper {
      * @mbg.generated Fri Apr 29 23:33:15 CST 2022
      */
     int updateByPrimaryKey(UserDO row);
+
+    UserDO selectByTelephone(String telephone);
 }

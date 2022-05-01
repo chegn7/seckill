@@ -36,12 +36,7 @@ public class UserServiceImpl implements UserService {
         return userModel;
     }
 
-    private UserModel convertFromDataObject(UserDO userDO, UserPasswordDO userPasswordDO) {
-        UserModel userModel = new UserModel();
-        BeanUtils.copyProperties(userDO, userModel);
-        if (userPasswordDO != null) userModel.setEncryptPassword(userPasswordDO.getEncryptPassword());
-        return userModel;
-    }
+
 
     @Override
     @Transactional
@@ -69,6 +64,16 @@ public class UserServiceImpl implements UserService {
         return;
     }
 
+    @Override
+    public UserModel validateLogin(String telephone, String encryptPassword) throws BusinessException {
+        UserDO userDO = userDOMapper.selectByTelephone(telephone);
+        if (userDO == null) throw new BusinessException(EmBusinessError.USER_LOGIN_FAILED);
+        UserPasswordDO userPasswordDO = userPasswordDOMapper.selectByUserId(userDO.getId());
+        UserModel userModel = convertFromDataObject(userDO,userPasswordDO);
+        if (!StringUtils.equals(encryptPassword,userModel.getEncryptPassword()))throw new BusinessException(EmBusinessError.USER_LOGIN_FAILED);
+        return userModel;
+    }
+
     private UserPasswordDO convertFromModelToPassword(UserModel userModel) {
         if (userModel == null) return null;
         UserPasswordDO userPasswordDO = new UserPasswordDO();
@@ -82,5 +87,12 @@ public class UserServiceImpl implements UserService {
         UserDO userDO = new UserDO();
         BeanUtils.copyProperties(userModel,userDO);
         return userDO;
+    }
+
+    private UserModel convertFromDataObject(UserDO userDO, UserPasswordDO userPasswordDO) {
+        UserModel userModel = new UserModel();
+        BeanUtils.copyProperties(userDO, userModel);
+        if (userPasswordDO != null) userModel.setEncryptPassword(userPasswordDO.getEncryptPassword());
+        return userModel;
     }
 }

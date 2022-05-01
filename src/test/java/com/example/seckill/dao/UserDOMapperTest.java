@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class UserDOMapperTest {
     @Autowired
     UserDOMapper userDOMapper;
+
     @Test
     void selectByPrimaryKey() {
         UserDO userDO = userDOMapper.selectByPrimaryKey(1);
@@ -17,5 +18,13 @@ class UserDOMapperTest {
         } else {
             System.out.println(userDO.getName());
         }
+    }
+
+    @Test
+    void seletByTelephone() {
+        UserDO userDO = userDOMapper.selectByTelephone("12333333333");
+        userDO = userDOMapper.selectByTelephone("12333333334");
+        System.out.println(userDO);
+
     }
 }

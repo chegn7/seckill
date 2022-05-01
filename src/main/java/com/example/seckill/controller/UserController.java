@@ -35,7 +35,26 @@ public class UserController extends BaseController {
     @Autowired
     private HttpServletRequest httpServletRequest;
 
-    @RequestMapping(value = "/register", method = {RequestMethod.POST})
+    @RequestMapping(value = "/login", method = {RequestMethod.POST},
+            consumes = {CONTENT_TYPE_FORMED})
+    @ResponseBody
+    public CommonReturnType login(@RequestParam(name = "telephone") String telephone,
+                                  @RequestParam(name = "password") String password) throws BusinessException, NoSuchAlgorithmException {
+        // 入参校验
+        if (StringUtils.isEmpty(telephone))
+            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "手机号不能为空");
+        if (StringUtils.isEmpty(password))
+            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "密码不能为空");
+        // 用户登录服务，校验登录是否合法
+        UserModel userModel = userService.validateLogin(telephone, EncodeByMd5(password));
+        // 没有抛异常，说明登录成功，将登陆凭证加入session，后续会做分布式session
+        httpServletRequest.getSession().setAttribute("IS_LOGGED_IN", true);
+        httpServletRequest.getSession().setAttribute("LOGGED_IN_USER", userModel);
+        return CommonReturnType.create(null);
+    }
+
+    @RequestMapping(value = "/register", method = {RequestMethod.POST},
+            consumes = {CONTENT_TYPE_FORMED})
     @ResponseBody
     public CommonReturnType register(
             @RequestParam(name = "telephone") String telephone,
