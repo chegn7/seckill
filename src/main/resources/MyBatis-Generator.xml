@@ -39,9 +39,10 @@
 <!--            <columnOverride column="LONG_VARCHAR_FIELD" jdbcType="VARCHAR" />-->
             
         </table>
-        <table schema="DB2ADMIN" tableName="user_password" domainObjectName="UserPasswordDO">
+        <table schema="DB2ADMIN" tableName="user_password" domainObjectName="UserPasswordDO"></table>
+        <table schema="DB2ADMIN" tableName="item" domainObjectName="ItemDO"></table>
+        <table schema="DB2ADMIN" tableName="item_stock" domainObjectName="ItemStockDO"></table>
 
-        </table>
 
     </context>
 </generatorConfiguration>
