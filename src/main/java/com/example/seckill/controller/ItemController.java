@@ -66,7 +66,7 @@ public class ItemController extends BaseController {
     }
 
     // 商品列表
-    @RequestMapping(value = "/list", method = {RequestMethod.GET})
+    @RequestMapping(value = "/list-item", method = {RequestMethod.GET})
     @ResponseBody
     public CommonReturnType getItemList() {
         List<ItemModel> itemModelList = itemService.listItem();
