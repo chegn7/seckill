@@ -34,14 +34,16 @@ public class OrderController extends BaseController {
     @ResponseBody
     public CommonReturnType createOrder(
             @RequestParam(name = "itemId") Integer itemId,
-            @RequestParam(name = "amount") Integer amount
+            @RequestParam(name = "amount") Integer amount,
+            @RequestParam(name = "promoId", required = false) Integer promoId
     ) throws BusinessException {
         // 获取用户登录信息
         Boolean loggedIn = (Boolean) httpServletRequest.getSession().getAttribute("IS_LOGGED_IN");
-        if (loggedIn == null || !loggedIn.booleanValue()) throw new BusinessException(EmBusinessError.USER_NOT_LOGGED_IN);
+        if (loggedIn == null || !loggedIn.booleanValue())
+            throw new BusinessException(EmBusinessError.USER_NOT_LOGGED_IN);
         UserModel user = (UserModel) httpServletRequest.getSession().getAttribute("LOGGED_IN_USER");
 
-        OrderModel orderModel = orderService.createOrder(user.getId(), itemId, amount);
+        OrderModel orderModel = orderService.createOrder(user.getId(), itemId, promoId, amount);
 
         return CommonReturnType.create(null);
     }

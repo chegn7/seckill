@@ -6,7 +6,9 @@ import com.example.seckill.error.EmBusinessError;
 import com.example.seckill.response.CommonReturnType;
 import com.example.seckill.service.ItemService;
 import com.example.seckill.service.model.ItemModel;
+import com.example.seckill.service.model.PromoModel;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -78,6 +80,14 @@ public class ItemController extends BaseController {
         if (itemModel == null) return null;
         ItemVO itemVO = new ItemVO();
         BeanUtils.copyProperties(itemModel, itemVO);
+        PromoModel promoModel = itemModel.getPromoModel();
+        if (promoModel != null) {
+            itemVO.setPromoStatus(promoModel.getStatus());
+            itemVO.setPromoId(promoModel.getId());
+            itemVO.setPromoPrice(promoModel.getPromoItemPrice());
+            itemVO.setStartDate(promoModel.getStartDate().toString(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")));
+//            itemVO.setStartDate(promoModel.getStartDate().toString());
+        } else itemVO.setPromoStatus(0);
         return itemVO;
     }
 }

@@ -14,6 +14,7 @@ public class OrderModel {
     private String id;
     private Integer userId;
     private Integer itemId;
+    private Integer promoId;
     // 购买商品时的商品价格
     private BigDecimal itemPrice;
     // 交易数量

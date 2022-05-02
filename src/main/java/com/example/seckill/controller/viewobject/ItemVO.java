@@ -23,4 +23,10 @@ public class ItemVO {
     private Integer sales;
     // 商品图片
     private String imgUrl;
+
+    // 商品秒杀状态  0 无秒杀活动 1 即将开始 2 正在进行
+    private Integer promoStatus;
+    private Integer promoId;
+    private String startDate;
+    private BigDecimal promoPrice;
 }

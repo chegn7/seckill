@@ -32,5 +32,7 @@ public class ItemModel {
     // 商品图片
     @NotBlank(message = "图片不能为空")
     private String imgUrl;
+    // 使用聚合模型，将促销信息冗余存入
+    private PromoModel promoModel;
 
 }
