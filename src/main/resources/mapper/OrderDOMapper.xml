@@ -12,6 +12,49 @@
     <sql id="Base_Column_List">
         id, user_id, item_id, item_price, amount, order_price
     </sql>
+    <insert id="insertSelective" parameterType="com.example.seckill.dataobject.OrderDO">
+        insert into order_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="itemId != null">
+                item_id,
+            </if>
+            <if test="itemPrice != null">
+                item_price,
+            </if>
+            <if test="amount != null">
+                amount,
+            </if>
+            <if test="orderPrice != null">
+            order_price,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="itemId != null">
+                #{itemId},
+            </if>
+            <if test="itemPrice != null">
+                #{itemPrice},
+            </if>
+            <if test="amount != null">
+                #{amount},
+            </if>
+            <if test="orderPrice != null">
+                #{orderPrice},
+            </if>
+        </trim>
+    </insert>
     <select id="selectById" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"></include>

@@ -47,6 +47,11 @@
             <label class="form-control" type="text" id="stock"/>
         </div>
     </div>
+    <div class="form-actions">
+        <button class="btn blue" id="createorder" type="submit">
+            提交订单
+        </button>
+    </div>
 </div>
 </body>
 
@@ -64,6 +69,32 @@
     var g_itemVO = {};
 
     jQuery(document).ready(function () {
+        $("#createorder").on("click", function () {
+            $.ajax({
+                type: "POST",
+                contentType: "application/x-www-form-urlencoded",
+                url: "http://localhost:8080/order/createorder",
+                data: {
+                    "itemId": g_itemVO.id,
+                    "amount": 1,
+                },
+                xhrFields: {withCredentials: true},
+                success: function (data) {
+                    if (data.status == "success") {
+                        alert("下单成功");
+                        window.location.reload();
+                    } else {
+                        alert("提交订单失败，原因为" + data.data.errorMessage);
+                        if (data.data.errorCode === 20003) {
+                            window.location.href = "login.html";
+                        }
+                    }
+                },
+                error: function (data) {
+                    alert("提交订单失败，原因为" + data.responseText);
+                }
+            });
+        });
         $.ajax({
             type: "GET",
             url: "http://localhost:8080/item/get",

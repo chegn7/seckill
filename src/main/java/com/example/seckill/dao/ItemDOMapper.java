@@ -96,5 +96,7 @@ public interface ItemDOMapper {
      */
     int updateByPrimaryKey(ItemDO row);
 
+    int updateSalesByPrimaryKey(Integer id, Integer sales);
+
     List<ItemDO> listItem();
 }

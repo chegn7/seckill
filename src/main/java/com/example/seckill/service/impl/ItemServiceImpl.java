@@ -97,6 +97,22 @@ public class ItemServiceImpl implements ItemService {
         return itemModel;
     }
 
+    @Override
+    @Transactional
+    public Boolean decreaseStock(Integer itemId, Integer amount) {
+        int updateRows = itemStockDOMapper.updateStock(itemId, amount);
+        return updateRows == 1;
+    }
+
+    @Override
+    @Transactional
+    public Boolean increaseSales(Integer itemId, Integer amount) {
+        ItemDO itemDO = itemDOMapper.selectByPrimaryKey(itemId);
+        Integer sales = itemDO.getSales() + amount;
+        int updateSalesRows = itemDOMapper.updateSalesByPrimaryKey(itemId, sales);
+        return updateSalesRows == 1;
+    }
+
     private ItemModel convertFromDataObject(ItemDO itemDO, ItemStockDO itemStockDO) {
         if (itemDO == null || itemStockDO == null) return null;
         ItemModel itemModel = new ItemModel();

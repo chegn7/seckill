@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.seckill.dao.SequenceDOMapper">
+    <resultMap id="BaseResultMap" type="com.example.seckill.dataobject.SequenceDO">
+        <id column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="current_value" jdbcType="INTEGER" property="currentValue"/>
+        <result column="step" jdbcType="INTEGER" property="step"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        name, current_value, step
+    </sql>
+    <update id="updateSequenceDO" parameterType="com.example.seckill.dataobject.SequenceDO">
+        update sequence_info
+        set current_value = #{currentValue}
+        where name = #{name}
+    </update>
+    <select id="selectSequenceDOByName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from sequence_info
+        where name = #{name}
+        for update
+    </select>
+
+
+</mapper>

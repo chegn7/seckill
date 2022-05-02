@@ -12,4 +12,8 @@ public interface ItemService {
     List<ItemModel>  listItem();
     // 获取商品详情
     ItemModel getItem(Integer itemId);
+
+    Boolean decreaseStock(Integer itemId, Integer amount);
+
+    Boolean increaseSales(Integer itemId, Integer amount);
 }
