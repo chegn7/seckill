@@ -5,8 +5,6 @@ import com.example.seckill.service.model.UserModel;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class UserServiceImplTest {
 
@@ -19,7 +17,7 @@ class UserServiceImplTest {
 
     @Test
     void register() throws Exception {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 0; i++) {
             UserModel userModel = new UserModel();
             userModel.setName("aaa" + i);
             userModel.setTelephone(String.valueOf(12300000001L + i));
