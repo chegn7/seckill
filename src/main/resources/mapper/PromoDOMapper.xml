@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.seckill.dao.PromoDOMapper">
+    <resultMap id="BaseResultMap" type="com.example.seckill.dataobject.PromoDO">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="promo_name" jdbcType="VARCHAR" property="promoName"/>
+        <result column="start_date" jdbcType="TIMESTAMP" property="startDate" javaType="java.util.Date"/>
+        <result column="item_id" jdbcType="INTEGER" property="itemId"/>
+        <result column="promo_item_price" jdbcType="DECIMAL" property="promoItemPrice"/>
+        <result column="end_date" jdbcType="TIMESTAMP" property="endDate"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, promo_name, start_date, item_id, promo_item_price, end_date
+    </sql>
+    <select id="selectByPromoId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from promo_info
+        where id = #{id}
+    </select>
+    <select id="selectByItemId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from promo_info
+        where item_id = #{itemId}
+        order by start_date asc
+    </select>
+</mapper>
