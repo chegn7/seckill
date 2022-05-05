@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import sun.misc.BASE64Encoder;
@@ -18,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author cheng
@@ -35,6 +38,9 @@ public class UserController extends BaseController {
     @Autowired
     private HttpServletRequest httpServletRequest;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @RequestMapping(value = "/login", method = {RequestMethod.POST},
             consumes = {CONTENT_TYPE_FORMED})
     @ResponseBody
@@ -48,9 +54,16 @@ public class UserController extends BaseController {
         // 用户登录服务，校验登录是否合法
         UserModel userModel = userService.validateLogin(telephone, EncodeByMd5(password));
         // 没有抛异常，说明登录成功，将登陆凭证加入session，后续会做分布式session
-        httpServletRequest.getSession().setAttribute("IS_LOGGED_IN", true);
-        httpServletRequest.getSession().setAttribute("LOGGED_IN_USER", userModel);
-        return CommonReturnType.create(null);
+        // 分布式 token
+        // 1. 生成登陆凭证token ，一般使用UUID
+        String uuidToken = UUID.randomUUID().toString();
+        uuidToken.replaceAll("-", "");
+        // 2. 建立uuid与用户之间的关联
+        redisTemplate.opsForValue().set(uuidToken,userModel, 3600, TimeUnit.SECONDS);
+//        httpServletRequest.getSession().setAttribute("IS_LOGGED_IN", true);
+//        httpServletRequest.getSession().setAttribute("LOGGED_IN_USER", userModel);
+        // 3. 下发token给前端返回
+        return CommonReturnType.create(uuidToken);
     }
 
     @RequestMapping(value = "/register", method = {RequestMethod.POST},
