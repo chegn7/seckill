@@ -39,6 +39,7 @@ public class ItemServiceImpl implements ItemService {
     @Autowired
     private PromoService promoService;
 
+
     @Override
     @Transactional
     public ItemModel createItemModel(ItemModel itemModel) throws BusinessException {

@@ -1,5 +1,6 @@
 package com.example.seckill.controller;
 
+import com.example.seckill.common.RedisKeyUtil;
 import com.example.seckill.controller.viewobject.ItemVO;
 import com.example.seckill.error.BusinessException;
 import com.example.seckill.error.EmBusinessError;
@@ -11,11 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -30,6 +33,9 @@ public class ItemController extends BaseController {
 
     @Autowired
     ItemService itemService;
+
+    @Autowired
+    RedisTemplate redisTemplate;
 
 
     @RequestMapping(value = "/create", method = {RequestMethod.POST},
@@ -61,7 +67,12 @@ public class ItemController extends BaseController {
     @RequestMapping(value = "/get", method = {RequestMethod.GET})
     @ResponseBody
     public CommonReturnType getItem(@RequestParam(name = "itemId") Integer itemId) throws BusinessException {
-        ItemModel itemModel = itemService.getItem(itemId);
+        String itemDetailKey = RedisKeyUtil.getItemDetailKey(itemId);
+        ItemModel itemModel = (ItemModel) redisTemplate.opsForValue().get(itemDetailKey);
+        if (itemModel == null) {
+            itemModel = itemService.getItem(itemId);
+            redisTemplate.opsForValue().set(itemDetailKey, itemModel, 10, TimeUnit.MINUTES);
+        }
         if (itemModel == null) throw new BusinessException(EmBusinessError.ITEM_NOT_EXIST);
         ItemVO itemVO = convertVOFromModel(itemModel);
         return CommonReturnType.create(itemVO);
